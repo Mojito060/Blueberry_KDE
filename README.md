@@ -1,5 +1,5 @@
 # Blueberry
- Currently Playing Spotify Song As Wallpaper for Gnome
+ Currently Playing Spotify Song As Wallpaper for KDE
 
 
 
