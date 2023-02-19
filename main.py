@@ -105,7 +105,7 @@ while 1:
     image = Image.open("./ImageCache/newCover.png")
     wpercent = (width/float(image.size[0]))
     hsize = int((float(image.size[1])*float(wpercent)))
-    image = image.resize((width,hsize), Image.ANTIALIAS)
+    image = image.resize((width,hsize), Image.Resampling.LANCZOS)
     image.save('./ImageCache/albumImage.png')
 
     #Setup Background Colors
