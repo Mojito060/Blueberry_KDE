@@ -2,4 +2,4 @@
 client_id = 
 client_secret = 
 spot_username = 
-display_size = 2560x1440
+display_size = 3440x1440

@@ -1,9 +1,9 @@
-from types import ClassMethodDescriptorType
 import requests, colorgram, os
 import time as t
 import spotipy.util as util
 from PIL import Image, ImageDraw, ImageFont
-from spotipy.oauth2 import SpotifyOAuth
+
+
 
 
 # Get creds please enter your creds in creds.txt
@@ -145,8 +145,8 @@ while 1:
 
 
     #set image
-    cwd = os.getcwd()
-    os.system("gsettings set org.gnome.desktop.background picture-uri " + cwd + "/ImageCache/finalImage.png")
+    os.system("plasma-apply-wallpaperimage `realpath ImageCache/finalImage.png`")
+
 
     t.sleep(5)
 
