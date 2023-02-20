@@ -1,4 +1,4 @@
-#!/home/dank/Documents/Python/Blueberry/venv/bin/python3
+#!/home/leanderw/PycharmProjects/Blueberry_KDE/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
