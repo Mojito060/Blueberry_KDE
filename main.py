@@ -130,6 +130,9 @@ state = False
 while 1:
     if is_window_fullscreen() == False:
         try:
+
+            #Checks if album was changed
+
             currentAlbumID = get_current_album_id()
             t.sleep(2)
             if currentAlbumID != previousAlbumID:
@@ -179,6 +182,8 @@ while 1:
                 background.paste(image, (
                     (int(background.width / 2) - int(image.width / 2)),
                     int((background.height / 2) - int(image.height / 2))))
+
+                # Switches between two wallpaper files because KDE won't update the wallpaper if the file name is the same
                 state = not state
                 background.save("./ImageCache/finalImage.png")
                 background.save("./ImageCache/finalImage1.png")
