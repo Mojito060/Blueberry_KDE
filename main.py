@@ -15,7 +15,7 @@ client_secret = ""
 spotify_token = ""
 username = ""
 scope = "user-read-currently-playing"
-display = ""
+display = os.system("xdpyinfo  | grep -oP 'dimensions:\s+\K\S+'")
 
 
 def main():
@@ -162,8 +162,9 @@ while 1:
 
                 colorImageOne = Image.new('RGB', (baseWidth, int(baseHeight / 2)), (firstColor.rgb))
                 titleArtist = ImageDraw.Draw(colorImageOne)
-                songTitle = get_song_id()[1]
-                songArtist = get_song_id()[2]
+                song_id = get_song_id()
+                songTitle = song_id[1]
+                songArtist = song_id[2]
                 myFont = ImageFont.truetype("./fonts/Rubik.ttf", 40)
                 titleArtist.text((50, 50), (songTitle + "\n" + songArtist), font=myFont, fill=(255, 255, 255))
                 colorImageOne.save('./ImageCache/firstColor.png')

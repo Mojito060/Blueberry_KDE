@@ -1,5 +1,4 @@
 #Enter Spotify details  (no quotes)
 client_id = 
 client_secret = 
-spot_username = 
-display_size = 3440x1440
+spot_username =
