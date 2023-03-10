@@ -2,9 +2,6 @@ import requests, colorgram, os
 import time as t
 import spotipy.util as util
 from PIL import Image, ImageDraw, ImageFont
-import Xlib.display
-import Xlib.X
-import Xlib.Xatom
 
 
 # Get creds please enter your creds in creds.txt
@@ -56,24 +53,6 @@ def get_current_album_id():
         return None
 
 
-#Check if any window is in Fullscreen
-def is_window_fullscreen():
-    display = Xlib.display.Display()
-    root = display.screen().root
-    active_window_id = root.get_full_property(
-        display.intern_atom('_NET_ACTIVE_WINDOW'),
-        Xlib.X.AnyPropertyType
-    ).value[0]
-    active_window = display.create_resource_object('window', active_window_id)
-    state_property = active_window.get_full_property(
-        display.intern_atom('_NET_WM_STATE'),
-        Xlib.Xatom.ATOM
-    )
-    if state_property:
-        state_atoms = [display.get_atom_name(x) for x in state_property.value]
-        if '_NET_WM_STATE_FULLSCREEN' in state_atoms:
-            return True
-    return False
 def get_song_id():
     header = {
         "Authorization": "Bearer {}".format(spotify_token)
@@ -86,13 +65,13 @@ def get_song_id():
             t.sleep(1)
         name = song_content['item']['name']
 
-        artistName = song_content['item']['album']['artists'][0]['name']
-        imageUrl = song_content['item']['album']['images'][1]['url']
-        imageRequest = requests.get(str(imageUrl))
+        artist_name = song_content['item']['album']['artists'][0]['name']
+        image_url = song_content['item']['album']['images'][1]['url']
+        image_request = requests.get(str(image_url))
         file = open("./ImageCache/newCover.png", "wb")
-        file.write(imageRequest.content)
+        file.write(image_request.content)
         file.close()
-        return [id, name, artistName]
+        return [id, name, artist_name]
     except KeyError:
         spotify_authenticate()
         get_song_id()
@@ -128,81 +107,80 @@ currentAlbumID = get_current_album_id()
 previousAlbumID = get_current_album_id()
 state = False
 while 1:
-    if is_window_fullscreen() == False:
-        try:
+    try:
 
-            #Checks if album was changed
+        # Checks if album was changed
 
-            currentAlbumID = get_current_album_id()
-            t.sleep(2)
-            if currentAlbumID != previousAlbumID:
-                get_song_id()
-                # Setup Album Image
-                width = int(int(display[0]) / 5)
-                height = int(int(display[1]) / 2)
+        currentAlbumID = get_current_album_id()
+        t.sleep(2)
+        if currentAlbumID != previousAlbumID:
+            get_song_id()
+            # Setup Album Image
+            width = int(int(display[0]) / 5)
+            height = int(int(display[1]) / 2)
 
-                baseWidth = int(display[0])
-                baseHeight = int(display[1])
-                image = Image.open("./ImageCache/newCover.png")
-                wpercent = (width / float(image.size[0]))
-                hsize = int((float(image.size[1]) * float(wpercent)))
-                image = image.resize((width, hsize), Image.Resampling.LANCZOS)
-                image.save('./ImageCache/albumImage.png')
+            baseWidth = int(display[0])
+            baseHeight = int(display[1])
+            image = Image.open("./ImageCache/newCover.png")
+            wpercent = (width / float(image.size[0]))
+            hsize = int((float(image.size[1]) * float(wpercent)))
+            image = image.resize((width, hsize), Image.Resampling.LANCZOS)
+            image.save('./ImageCache/albumImage.png')
 
-                # Setup Background Colors
-                colors = colorgram.extract('./ImageCache/albumImage.png', 2)
-                if len(colors) < 2:
-                    firstColor = colors[0]
-                    secondColor = colors[0]
-                else:
-                    firstColor = colors[0]
-                    secondColor = colors[1]
+            # Setup Background Colors
+            colors = colorgram.extract('./ImageCache/albumImage.png', 2)
+            if len(colors) < 2:
+                firstColor = colors[0]
+                secondColor = colors[0]
+            else:
+                firstColor = colors[0]
+                secondColor = colors[1]
 
-                # Create images with colors
+            # Create images with colors
 
-                colorImageOne = Image.new('RGB', (baseWidth, int(baseHeight / 2)), (firstColor.rgb))
-                titleArtist = ImageDraw.Draw(colorImageOne)
-                song_id = get_song_id()
-                songTitle = song_id[1]
-                songArtist = song_id[2]
-                myFont = ImageFont.truetype("./fonts/Rubik.ttf", 40)
-                titleArtist.text((50, 50), (songTitle + "\n" + songArtist), font=myFont, fill=(255, 255, 255))
-                colorImageOne.save('./ImageCache/firstColor.png')
+            colorImageOne = Image.new('RGB', (baseWidth, int(baseHeight / 2)), firstColor.rgb)
+            titleArtist = ImageDraw.Draw(colorImageOne)
+            song_id = get_song_id()
+            songTitle = song_id[1]
+            songArtist = song_id[2]
+            myFont = ImageFont.truetype("./fonts/Rubik.ttf", 40)
+            titleArtist.text((50, 50), (songTitle + "\n" + songArtist), font=myFont, fill=(255, 255, 255))
+            colorImageOne.save('./ImageCache/firstColor.png')
 
-                colorImageTwo = Image.new('RGB', (baseWidth, int(baseHeight / 2)), (secondColor.rgb))
-                colorImageTwo.save('./ImageCache/secondColor.png')
+            colorImageTwo = Image.new('RGB', (baseWidth, int(baseHeight / 2)), secondColor.rgb)
+            colorImageTwo.save('./ImageCache/secondColor.png')
 
-                # Combine Images
+            # Combine Images
 
-                background = Image.new('RGB', (colorImageOne.width, colorImageOne.height + colorImageTwo.height))
-                background.paste(colorImageOne, (0, 0))
-                background.paste(colorImageTwo, (0, colorImageOne.height))
-                background.save('./ImageCache/background.png')
+            background = Image.new('RGB', (colorImageOne.width, colorImageOne.height + colorImageTwo.height))
+            background.paste(colorImageOne, (0, 0))
+            background.paste(colorImageTwo, (0, colorImageOne.height))
+            background.save('./ImageCache/background.png')
 
-                finalImage = Image.new('RGB', (width, height))
-                background.paste(image, (
-                    (int(background.width / 2) - int(image.width / 2)),
-                    int((background.height / 2) - int(image.height / 2))))
+            finalImage = Image.new('RGB', (width, height))
+            background.paste(image, (
+                (int(background.width / 2) - int(image.width / 2)),
+                int((background.height / 2) - int(image.height / 2))))
 
-                # Switches between two wallpaper files because KDE won't update the wallpaper if the file name is the same
-                state = not state
-                background.save("./ImageCache/finalImage.png")
-                background.save("./ImageCache/finalImage1.png")
+            # Switches between two wallpaper files because KDE won't update the wallpaper if the file name is the same
+            state = not state
+            background.save("./ImageCache/finalImage.png")
+            background.save("./ImageCache/finalImage1.png")
 
-                if state:
+            if state:
 
-                    if currentAlbumID != previousAlbumID:
-                        os.system("plasma-apply-wallpaperimage `realpath ImageCache/finalImage.png`")
-                        previousAlbumID = currentAlbumID
+                if currentAlbumID != previousAlbumID:
+                    os.system("plasma-apply-wallpaperimage `realpath ImageCache/finalImage.png`")
+                    previousAlbumID = currentAlbumID
 
 
-                else:
+            else:
 
-                    if currentAlbumID != previousAlbumID:
-                        os.system("plasma-apply-wallpaperimage `realpath ImageCache/finalImage1.png`")
-                        previousAlbumID = currentAlbumID
+                if currentAlbumID != previousAlbumID:
+                    os.system("plasma-apply-wallpaperimage `realpath ImageCache/finalImage1.png`")
+                    previousAlbumID = currentAlbumID
 
-                t.sleep(5)
+            t.sleep(5)
 
-        except:
-            t.sleep(2)
+    except:
+        t.sleep(2)
