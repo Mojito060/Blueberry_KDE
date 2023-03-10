@@ -31,3 +31,15 @@
 7. Copy link of web page after signing in and paste into teminal
 8. Profit?
 
+## Installation
+
+Now, to run the script after the system boots, you'll have to follow a few but easy steps:
+1. Run `make config`, to set the appropriate parameters on the *blueberry.service*.
+2. Now, to enable the *systemd* service, run the make command `make setup`, which does and runs the following (requires **sudo** permissions):
+   1. Places the service file inside */etc/systemd/user* (requires **sudo**)
+   1. Assign the appropriate permission to the service file by running `sudo chmod 644 /etc/systemd/user/blueberry.service`. (requires **sudo**)
+   3. Reload the systemd daemon by running `systemctl --user daemon-reload`
+   2. Enable the service by running `systemctl --user enable blueberry.service`
+
+And that's all, from now on, after the system boots, the script will be running in the background.
+
