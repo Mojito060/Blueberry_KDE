@@ -1,5 +1,5 @@
 # Blueberry
- Currently Playing Spotify Song As Wallpaper for KDE
+ Sets album cover the currently playing song on Spotify as Wallpaper for KDE
 
 
 
