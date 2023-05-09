@@ -12,7 +12,7 @@ config:
 
 .ONESHELL:
 setup:
-	sudo cp apodwallpaper.service /etc/systemd/user/
+	sudo cp blueberry.service /etc/systemd/user/
 	sudo chmod 644 /etc/systemd/user/blueberry.service
 	systemctl --user daemon-reload
 	systemctl --user enable blueberry.service
